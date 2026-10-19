@@ -150,8 +150,8 @@ export default function Navbar() {
             <Link href="/compare" aria-label="Compare" className="hidden sm:block">
               <ArrowLeftRight className="h-6 w-6" />
             </Link>
-            <Link href="/cart" aria-label="Cart">
-              <ShoppingCart className="h-6 w-6" />
+            <Link href="/login" aria-label="Cart">
+             Login
             </Link>
             <Link href="/account" aria-label="Account">
               <User className="h-6 w-6" />

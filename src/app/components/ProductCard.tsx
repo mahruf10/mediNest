@@ -58,7 +58,7 @@ const handleWishlist = async (productId: number) => {
 
           <button
             type="button"
-            onClick={() => handleWishlist(String(product.id))}
+            onClick={() => handleWishlist((product.id))}
             className="absolute right-4 top-4 z-10 flex size-10 items-center justify-center rounded-full bg-white shadow-md"
             aria-label="Add to wishlist"
           >
@@ -78,6 +78,7 @@ const handleWishlist = async (productId: number) => {
             <Button
               className="w-full"
               onClick={() => handleCart(product)}
+              disabled={product.stock===0}
             >
               <ShoppingCart />
               Add to cart
