@@ -14,8 +14,11 @@ import {
 import { FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/toast";
+import { authClient } from "@/src/lib/auth-client";
 
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import * as zod from 'zod'
 export default function LoginPage() {
     const formSchema=zod.object({
@@ -29,14 +32,36 @@ export default function LoginPage() {
     },
     onSubmit: async ({ value }) => {
       console.log("Login data:", value);
+      try {
+           const{data,error}=await authClient.signIn.email(value)
+           if(error){
+            return(
+           toast.add({
+            type: "error",
+           title:error.message
+           
+          }))
+           }
+        toast.add({
+            type: "success",
+           title:'user successfully login'
+           
+          })
+          console.log(data);
 
-      // Ekhane login API call korbe
+      } catch (error) {
+                  return (
+                    toast.add({
+          type:"error",
+        title: "something went wrong,plese try again...",
+})
+          )
+      }
     },
     validators:{
         onSubmit:formSchema
     }
   });
-
   return (
     <Card className="mx-auto my-18 w-full max-w-sm">
       <CardHeader>
@@ -146,6 +171,7 @@ export default function LoginPage() {
           >
             Login with Google
           </Button>
+     <Link href={'/register'}> <button className="mt-5 rounded-full border-2 text-center w-45 text-[15px]">Create new Account</button></Link>   
         </CardFooter>
       </form>
     </Card>
