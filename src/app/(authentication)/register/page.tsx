@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 import * as zod from 'zod'
 export default function RegisterPage() {
     const formSchema=zod.object({
-        name:zod.string(),
+        name:zod.string().min(2, { error: 'Name must be at least 2 characters long.' }),
         email:zod.email(),
         password:zod.string().min(6,'password must be atleast 6 characters')
     })

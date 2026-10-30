@@ -28,6 +28,18 @@ catch(error){
 }
     
 },
+    getAllProduct: async() => {
+   try {
+const res=await fetch('http://localhost:5000/product',{
+    })
+    const data=await res.json()
+    return data;
+}
+catch(error){
+    console.error(error);
+}
+    
+},
 createCart: async (product:Product) => {
   
     // const cookieStore=await cookies()

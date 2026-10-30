@@ -19,12 +19,14 @@ import { authClient } from "@/src/lib/auth-client";
 
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as zod from 'zod'
 export default function LoginPage() {
     const formSchema=zod.object({
         email:zod.email(),
         password:zod.string().min(6,'password must be atleast 6 characters')
     })
+    const router=useRouter()
   const form = useForm({
     defaultValues: {
       email: "",
@@ -48,6 +50,7 @@ export default function LoginPage() {
            
           })
           console.log(data);
+          router.push('/')
 
       } catch (error) {
                   return (
