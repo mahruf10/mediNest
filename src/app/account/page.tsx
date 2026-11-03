@@ -80,6 +80,7 @@ export default function AccountPage() {
 
     const {data,isPending}=authClient.useSession()
     const user=data?.user
+    console.log(user);
  if(isPending){
         return <p>Please wait</p>
     }
