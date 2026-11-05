@@ -24,16 +24,30 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { authClient } from "@/src/lib/auth-client"
+// import Service from "@/src/productService/order.service"
 
 /* ---------------- Types & mock data (replace with your API/DB) ---------------- */
 
 type OrderStatus = "processing" | "shipped" | "delivered" | "cancelled"
-type Order = { id: string; date: string; items: string; total: number; status: OrderStatus }
+
+export type Order = {
+  id: string
+  orderNumber: string
+  userId: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  paymentMethod: PaymentMethod
+  totalAmount: number | string
+  items: OrderItem[]
+  createdAt: string
+  updatedAt: string
+}
 // type Prescription = { id: string; name: string; date: string; status: "verified" | "pending" | "rejected" }
 type Address = { id: string; label: string; name: string; phone: string; line: string; isDefault: boolean }
 
 
-
+   
+ 
 
 // const user = {
 //   name: "Rahim Uddin",
@@ -44,12 +58,7 @@ type Address = { id: string; label: string; name: string; phone: string; line: s
 //   memberSince: "Jan 2026",
 // }
 
-const orders: Order[] = [
-  { id: "MS-10245", date: "15 Oct 2026", items: "Napa Extra x2, Vitamin C 500mg", total: 640, status: "delivered" },
-  { id: "MS-10231", date: "08 Oct 2026", items: "Digital thermometer", total: 450, status: "shipped" },
-  { id: "MS-10198", date: "30 Sep 2026", items: "Ace Plus x3, Seclo 20mg", total: 385, status: "processing" },
-  { id: "MS-10120", date: "12 Sep 2026", items: "Baby lotion, Diaper (M)", total: 1250, status: "cancelled" },
-]
+
 
 // const prescriptions: Prescription[] = [
 //   { id: "RX-301", name: "Dr. Karim - Fever and cold", date: "14 Oct 2026", status: "verified" },
@@ -61,46 +70,111 @@ const addresses: Address[] = [
   { id: "a2", label: "Office", name: "Rahim Uddin", phone: "+880 1800-000000", line: "Level 5, GEC Circle, Chattogram", isDefault: false },
 ]
 
-const statusStyle: Record<OrderStatus, { label: string; className: string }> = {
-  processing: { label: "Processing", className: "bg-amber-100 text-amber-800 hover:bg-amber-100" },
-  shipped: { label: "Shipped", className: "bg-blue-100 text-blue-800 hover:bg-blue-100" },
-  delivered: { label: "Delivered", className: "bg-green-100 text-green-800 hover:bg-green-100" },
-  cancelled: { label: "Cancelled", className: "bg-red-100 text-red-800 hover:bg-red-100" },
+const statusStyle: Record<
+  OrderStatus,
+  { label: string; className: string }
+> = {
+  PENDING: {
+    label: "Pending",
+    className: "bg-amber-100 text-amber-800",
+  },
+  CONFIRMED: {
+    label: "Confirmed",
+    className: "bg-blue-100 text-blue-800",
+  },
+  PROCESSING: {
+    label: "Processing",
+    className: "bg-amber-100 text-amber-800",
+  },
+  SHIPPED: {
+    label: "Shipped",
+    className: "bg-blue-100 text-blue-800",
+  },
+  DELIVERED: {
+    label: "Delivered",
+    className: "bg-green-100 text-green-800",
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    className: "bg-red-100 text-red-800",
+  },
+  REFUNDED: {
+    label: "Refunded",
+    className: "bg-gray-100 text-gray-800",
+  },
 }
 
-const rxStyle = {
-  verified: "bg-green-100 text-green-800 hover:bg-green-100",
-  pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  rejected: "bg-red-100 text-red-800 hover:bg-red-100",
-}
+// const rxStyle = {
+//   verified: "bg-green-100 text-green-800 hover:bg-green-100",
+//   pending: "bg-amber-100 text-amber-800 hover:bg-amber-100",
+//   rejected: "bg-red-100 text-red-800 hover:bg-red-100",
+// }
 
 /* ----------------------------------- Page ----------------------------------- */
 
 export default function AccountPage() {
-
-    const {data,isPending}=authClient.useSession()
+const [orders,setOrder]=React.useState<Order[]>([])
+ const {data,isPending}=authClient.useSession()
+ const [loading,setLoading]=React.useState(true)
     const user=data?.user
-    console.log(user);
- if(isPending){
-        return <p>Please wait</p>
+
+  React.useEffect(() => {
+  if (isPending) return
+
+  if (!user?.id) {
+    return
+  }
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true)
+
+      const res = await fetch(
+        `http://localhost:5000/orders/${user.id}`
+      )
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch orders")
+      }
+
+      const result = await res.json()
+
+      setOrder(result.data ?? [])
+    } catch (error) {
+      console.error("Order fetching error:", error)
+      setOrder([])
+    } finally {
+      setLoading(false)
     }
+  }
+
+  fetchOrders()
+}, [user?.id, isPending])
+if (isPending || (user?.id && loading)) {
+  return 'please wait'
+}
   const initials = user?.name.split(" ").map((n) => n[0]).join("").slice(0, 2)
 
   return (
     <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
       <Card>
         <CardContent className="flex flex-col items-center gap-4 p-6 sm:flex-row">
-          {/* <Avatar className="size-20">
-            <AvatarImage src={user?.avatar} alt={user.name} />
+          <Avatar className="size-20">
+            <AvatarImage src={user?.image} alt={user?.name} />
             <AvatarFallback className="bg-primary/10 text-xl font-semibold text-primary">{initials}</AvatarFallback>
-          </Avatar> */}
+          </Avatar>
           <div className="flex-1 text-center sm:text-left">
+            
             <h1 className="text-2xl font-bold tracking-tight">{user?.name}</h1>
             <p className="text-sm text-muted-foreground">{user?.email}</p>
             {/* <p className="text-xs text-muted-foreground">Member since {user?.createdAt}</p> */}
           </div>
           <div className="grid grid-cols-3 gap-6 text-center">
-            <Stat value={orders.length} label="Orders" />
+
+            {
+              orders.length ? <Stat value={orders.length} label="Orders" />: <Stat value={0} label="Orders" />
+            }
+            
             {/* <Stat value={prescriptions.length} label="Prescriptions" /> */}
             <Stat value={addresses.length} label="Addresses" />
           </div>
@@ -181,32 +255,109 @@ function ProfileTab() {
 }
 
 function OrdersTab() {
+  const [orders, setOrder] = React.useState<Order[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [error, setError] = React.useState("")
+
+  const { data, isPending } = authClient.useSession()
+  const user = data?.user
+
+  React.useEffect(() => {
+    if (isPending) return
+
+    if (!user?.id) {
+      return
+    }
+
+    const fetchOrders = async () => {
+      try {
+        setLoading(true)
+        setError("")
+
+        const res = await fetch(
+          `http://localhost:5000/orders/${user.id}`
+        )
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch orders")
+        }
+
+        const result = await res.json()
+
+        setOrder(result.data ?? [])
+      } catch (error) {
+        console.error(error)
+        setError("Could not load your orders")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOrders()
+  }, [user?.id, isPending])
+
+  if (isPending || loading) {
+    return <p>Loading your orders...</p>
+  }
   return (
     <Card>
       <CardHeader>
         <CardTitle>Order history</CardTitle>
-        <CardDescription>Track and reorder your past purchases.</CardDescription>
+        <CardDescription>
+          Track and reorder your past purchases.
+        </CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
-        {orders.map((o, i) => (
-          <React.Fragment key={o.id}>
-            {i > 0 && <Separator />}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">#{o.id}</span>
-                  <Badge className={cn("border-0", statusStyle[o.status].className)}>{statusStyle[o.status].label}</Badge>
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : orders.length > 0 ? (
+          orders.map((o, i) => (
+            <React.Fragment key={o.id}>
+              {i > 0 && <Separator />}
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">
+                      #{o.orderNumber}
+                    </span>
+
+                  <Badge
+  className={cn(
+    "border-0",
+    status?.className ?? "bg-gray-100 text-gray-800"
+  )}
+>
+  {status?.label ?? o.status}
+</Badge>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground">
+                    {o.items.length} product(s)
+                  </p>
+
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(o.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">{o.items}</p>
-                <p className="text-xs text-muted-foreground">{o.date}</p>
+
+                <div className="flex items-center gap-3">
+                  <span className="font-semibold">
+                    ৳{Number(o.totalAmount).toLocaleString()}
+                  </span>
+
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <RotateCcw className="size-3.5" />
+                    Reorder
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="font-semibold">৳{o.total.toLocaleString()}</span>
-                <Button variant="outline" size="sm" className="gap-2"><RotateCcw className="size-3.5" />Reorder</Button>
-              </div>
-            </div>
-          </React.Fragment>
-        ))}
+            </React.Fragment>
+          ))
+        ) : (
+          <p>No order found</p>
+        )}
       </CardContent>
     </Card>
   )

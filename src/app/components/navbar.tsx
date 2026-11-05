@@ -82,7 +82,8 @@ function NavDropdown({
   );
 }
 
-export default function Navbar() {
+export default function Navbar(user) {
+
   return (
     <header className="w-full">
       {/* ===== Top bar: logo, search, phone, icons ===== */}
@@ -150,12 +151,16 @@ export default function Navbar() {
             <Link href="/compare" aria-label="Compare" className="hidden sm:block">
               <ArrowLeftRight className="h-6 w-6" />
             </Link>
-            <Link href="/login" aria-label="Cart">
-             Login
-            </Link>
-            <Link href="/account" aria-label="Account">
-              <User className="h-6 w-6" />
-            </Link>
+            {user ? (
+              <Link href="/account" aria-label="Account">
+                <User className="h-6 w-6" />
+              </Link>
+            ) : (
+              <Link href="/login" aria-label="Cart">
+                Login
+              </Link>
+            )}
+            
           </div>
         </div>
       </div>

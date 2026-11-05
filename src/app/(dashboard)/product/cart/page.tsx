@@ -1,4 +1,3 @@
-
 "use client";
 import Link from "next/link";
 import {
@@ -10,7 +9,6 @@ import {
   Tag,
   Truck,
 } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -24,11 +22,15 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import service from "@/src/productService/service";
 
+import { authClient } from "@/src/lib/auth-client";
+import Service from "@/src/productService/order.service";
+import { toast } from "@/components/ui/toast";
+
 type Product = {
   id: number;
   name: string;
   description: string | null;
-  price: string;
+  price: string | number;
   stock: number;
   imageUrl: string | null;
   manufacturer: string | null;
@@ -50,20 +52,42 @@ const formatPrice = (value: number) =>
     maximumFractionDigits: 2,
   })}`;
 
-export default function CartPage() {
   
+export default function CartPage() {
   const [cartItems,setCartItem]= useState<CartItem[]>([])
   const [loading,setLoading]=useState(true)
   useEffect(()=>{
-    fetch('http://localhost:5000/cart')
-    .then(res=>res.json())
-    .then(data=>{
-      setCartItem(data.data)
-      setLoading(false)
-    })
+    let active=true
+    const loadCart=async()=>{
+      try {
+        const result=await service.getCartData()
+        if(active) {
+          setCartItem(result.data)
+        }
+      } catch(error) {
+        if(active) {
+          toast.add({
+            type:"error",
+            title:error instanceof Error ? error.message : "Could not load cart"
+          })
+        }
+      } finally {
+        if(active) setLoading(false)
+      }
+    }
+    void loadCart()
+    return()=>{ active=false }
 },[])
+const [paymentMethod, setPaymentMethod] = useState("CASH_ON_DELIVERY");
+
+const paymentOptions = [
+  { value: "CASH_ON_DELIVERY", label: "Cash on Delivery" },
+  { value: "CARD", label: "Card" },
+  // { value: "MOBILE_BANKING", label: "Mobile Banking" },
+  // { value: "BANK_TRANSFER", label: "Bank Transfer" },
+];
   const items = cartItems;
- 
+  const {data}=authClient.useSession()
 const totalItems = items.reduce(
   (sum, item) => sum + Number(item.quantity),
   0
@@ -103,17 +127,61 @@ const decreaseQuantity = (itemId: number) => {
   );
 };
 const handleDelete=async(id:number)=>{
-const result=await service.deleteCartData(id)
-console.log(result);
-
-    if (result) {
+try {
+    await service.deleteCartData(id)
       setCartItem((prev) =>
         prev.filter((item) => item.id !== id)
       );
-
-      alert("Item deleted successfully");
-    }
+      toast.add({type:"success",title:"Item removed from cart"})
+} catch(error) {
+    toast.add({
+      type:"error",
+      title:error instanceof Error ? error.message : "Could not remove item from cart"
+    })
 }
+}
+
+const handleOrder=async()=>{
+const orderInfo={
+  userId:data?.user.id,
+  paymentMethod:paymentMethod,
+    items: cartItems.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+  })),
+
+}
+ try {
+    const res = await Service.postOrders(orderInfo);
+ console.log("Backend Response:", res);
+    if (res?.data.success) {
+      toast.add({
+        type: "success",
+        title: "Order confirmed. Thank you!",
+      });
+
+  
+
+
+
+
+    } else {
+      toast.add({
+        type: "error",
+        title: "Please try again.",
+      });
+    }
+
+    console.log(res);
+  } catch (error) {
+    toast.add({
+      type: "error",
+      title: "Something went wrong.",
+    });
+    console.error(error);
+  }
+}
+
   if (items.length === 0) {
     return (
       <main className="min-h-screen bg-muted/30 px-4 py-16 sm:py-24">
@@ -127,7 +195,7 @@ console.log(result);
           </h1>
 
           <p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
-            Looks like you haven't added anything to your cart yet.
+            Looks like you haven&apos;t added anything to your cart yet.
             Explore our collection and find something you love.
           </p>
 
@@ -376,6 +444,24 @@ console.log(result);
                   checkout.
                 </p>
 
+          <div>
+  <h3 className='my-3 font-bold'>Select Payment Method</h3>
+
+  {paymentOptions.map((option) => (
+    <label key={option.value} className='flex gap-5'>
+      <input
+        type="radio"
+        name="paymentMethod"
+        value={option.value}
+        checked={paymentMethod === option.value}
+        onChange={(e) => setPaymentMethod(e.target.value)}
+      />
+      {option.label}
+    </label>
+  ))}
+</div>
+
+
                 <Button
                   className="h-12 w-full rounded-xl text-base font-semibold"
                   size="lg"
@@ -385,10 +471,10 @@ console.log(result);
                   {hasOutOfStock ? (
                     <span>Proceed to Checkout</span>
                   ) : (
-                    <Link href="/checkout">
+                    <button onClick={()=>handleOrder()}>
                       Proceed to Checkout
                       <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
+                    </button>
                   )}
                 </Button>
 

@@ -5,7 +5,7 @@ export const userRoute = {
       items: [
         {
           title: "Cart",
-          url: "/cart",
+          url: "/product/cart",
         },
       ],
     },
@@ -14,7 +14,7 @@ export const userRoute = {
       items: [
         {
           title: "WishList",
-          url: "/wishlist",
+          url: "/product/wishlist",
         },
       ],
     },

@@ -30,7 +30,7 @@ const data = {
       items: [
         {
           title: "Cart",
-          url: "/product/cart",
+          url: "/cart",
         },
         
       ],
@@ -43,7 +43,7 @@ const data = {
       items: [
         {
           title: "WishList",
-          url: "/product/wishlist",
+          url: "/wishlist",
         },
   
       ],

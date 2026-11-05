@@ -1,7 +1,55 @@
-// import { cookies } from "next/headers";
-
-import { error } from "console";
 import type { StaticImageData } from "next/image";
+
+const API_BASE = "http://localhost:5000";
+
+type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+  message?: string;
+};
+
+type CartProduct = {
+  id: number;
+  name: string;
+  description: string | null;
+  price: string | number;
+  stock: number;
+  imageUrl: string | null;
+  manufacturer: string | null;
+  categoryId: number;
+};
+
+export interface CartItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+  product: CartProduct;
+}
+
+export interface WishlistItem {
+  id: number;
+  productId: number;
+  createdAt: string;
+  product: CartProduct;
+}
+
+async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+      ...init.headers,
+    },
+  });
+  const data = await response.json() as { message?: string; error?: string } & T;
+  if (!response.ok) {
+    throw new Error(data.message ?? data.error ?? `Request failed (HTTP ${response.status})`);
+  }
+  return data;
+}
 
 export interface Product {
   id: number;
@@ -15,16 +63,39 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
 }
+export interface ProductCategory {
+  id: number;
+  slug: string;
+  products: Product[];
+}
 const service={
-    getproductbySlug: async(slug:string) => {
+    getproductbySlug: async(slug:string): Promise<ProductCategory[] | null> => {
+   const endpoint = `http://localhost:5000/product/${encodeURIComponent(slug)}`;
    try {
-const res=await fetch(`http://localhost:5000/product/${slug}`,{
-    })
-    const data=await res.json()
+    console.info(`[product-service] Fetching category "${slug}" from ${endpoint}`);
+    const res=await fetch(endpoint, { cache: "no-store" });
+    if (res.status === 404) {
+        return null;
+    }
+    if (!res.ok) {
+        throw new Error(`Failed to fetch category "${slug}" (HTTP ${res.status})`);
+    }
+    const data: ProductCategory[] = await res.json();
+    const category = data[0];
+    if (category && category.slug !== slug) {
+        throw new Error(`Requested category "${slug}" but API returned "${category.slug}"`);
+    }
+    // console.info("[product-service] Category response", {
+    //     requestedSlug: slug,
+    //     returnedSlug: category?.slug ?? null,
+    //     categoryId: category?.id ?? null,
+    //     productCount: category?.products.length ?? 0,
+    // });
     return data;
 }
 catch(error){
     console.error(error);
+    throw error;
 }
     
 },
@@ -40,97 +111,45 @@ catch(error){
 }
     
 },
-createCart: async (product:Product) => {
-  
-    // const cookieStore=await cookies()
-    try {
-        const res=await fetch("http://localhost:5000/cart",{
-            method:"POST",
-            headers:{
-                "content-type":"application/json",
-                // cookie:cookieStore.toString()
-            },
-            body:JSON.stringify({productId:product.id})
-        })
-        console.log(res);
-        const data=await res.json()
-        console.log(data);
-        return data;
-    } catch (error) {
-        console.error(error);
-    }
+createCart: async (productId:number) => {
+    return apiRequest<ApiResponse<CartItem>>("/cart", {
+        method:"POST",
+        body:JSON.stringify({productId})
+    });
 },
 getCartData:async()=>{
-    // const cookieStore=await cookies()
-try {
-    const res=await fetch('http://localhost:5000/cart',{
-        method:'GET',
-        headers:{
-            "content-type":"application/json",
-            // cookie:cookieStore.toString()
-        },
-      
-        })
-        const data=await res.json()
-        console.log(data)
-        return data
-} catch (error) {
-    console.log(error);
-}
+    return apiRequest<ApiResponse<CartItem[]>>("/cart");
 },
-deleteCartData:async(id:number)=>{
- try {
-    const res=await fetch(`http://localhost:5000/cart/${id}`,{
-        method:'DELETE',
-    })
-     if (!res.ok) {
-    throw new Error("Failed to delete cart item");
-  }
+deleteCartData:async(cartItemId:number)=>{
+    return apiRequest<ApiResponse<{count:number}>>(`/cart/${cartItemId}`, {
+        method:"DELETE"
+    });
+},
+// deleteAllCartData:async()=>{
+//     const res=
+// }
 
-  return await res.json();
- } catch (error) {
-    console.log(error);
- }
-}
-,
 postWishlist:async(id:number)=>{
-    
-        const result=await fetch('http://localhost:5000/wishlist',{
-            method:'POST',
-            headers:{
-                'content-type':'application/json'
-            },
-            body:JSON.stringify({id})
-        })
-        const data=await result.json()
-        if(!result.ok){
-            throw new Error(data.message ||"something went wrong")
-        }
-        
-        return data
-   
+    return apiRequest<ApiResponse<WishlistItem>>("/wishlist", {
+        method:"POST",
+        body:JSON.stringify({productId:id})
+    });
 },
 getWishlistData:async()=>{
-const result=await fetch('http://localhost:5000/wishlist',{
-    method:"GET"
-})
-const data=await result.json()
-if(!result.ok){
-    throw new Error(data.message || 'something went wrong')
-}
-return data
+    return apiRequest<ApiResponse<WishlistItem[]>>("/wishlist");
 },
 removewishlist:async(wishlistId:number)=>{
-      const res = await fetch(
-        `http://localhost:5000/wishlist/${wishlistId}`,
-        { method: "DELETE" }
-      );
-      const data=await res.json()
-      if(!res.ok){
-        throw new Error(data.message || 'something went wrong')
-      }
-return data
-}
+    return apiRequest<ApiResponse<{count:number}>>(`/wishlist/${wishlistId}`, {
+        method:"DELETE"
+    });
+},
+// getSession:async()=>{
+    
+//         const res=await fetch('http://localhost:5000/api/get-session',{
+//         })
+//         const data=await res.json()
+//         return data
+//     }     
 }
 
 export default service

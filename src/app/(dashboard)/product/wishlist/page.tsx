@@ -6,8 +6,6 @@ import Link from "next/link";
 import {
   Heart,
   ShoppingCart,
-  Eye,
-  Trash2,
   ArrowRight,
   Loader2,
   PackageOpen,
@@ -17,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/toast";
 import service from "@/src/productService/service";
 
 type Product = {
@@ -46,7 +45,10 @@ export default function WishlistPage() {
         
         setItems(result.data);
       } catch (error) {
-        console.error(error);
+        toast.add({
+          type:"error",
+          title:error instanceof Error ? error.message : "Could not load wishlist"
+        })
       } finally {
         setLoading(false);
       }
@@ -65,23 +67,39 @@ export default function WishlistPage() {
     }
       setItems((prev) => prev.filter((item) => item.productId !== wishlistId));
     } catch (error) {
-      console.log(error.message);
-      alert("Could not remove item from wishlist");
+      console.error(error);
+      alert(error instanceof Error ? error.message : "Could not remove item from wishlist");
     } finally {
       setRemovingId(null);
     }
   };
 
-  const addToCart = async (productId) => {
+  const addToCart = async (productId:number) => {
     try {
       const res=await service.createCart(productId)
+      console.log(res);
+      if(!res.success){
+        toast.add({
+          type:'error',
+          title:'can not add to the cart.somethings went wrong'
+        })
+      }
+      else{
+         const deleteCart=await service.removewishlist(productId)
+         console.log('deleteCart',deleteCart);
+         if(deleteCart.success){
+             toast.add({
+          type:'success',
+          title:'Product added to cart!'
+        })
+         }
+      
+        
+      }
 
-      if (!res.ok) throw new Error("Failed to add to cart");
-
-      alert("Product added to cart!");
     } catch (error) {
       console.error(error);
-      alert("Could not add product to cart");
+      alert(error instanceof Error ? error.message : "Could not add product to cart");
     }
   };
 
