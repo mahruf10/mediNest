@@ -12,7 +12,7 @@ import service from "@/src/productService/service";
 import { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
-type Props = {
+export type Props = {
   products: Product[];
 };
 

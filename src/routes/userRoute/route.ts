@@ -1,21 +1,20 @@
-export const userRoute = {
+import { allRoutes, } from "../type";
+
+export const userRoute: allRoutes = {
   items: [
     {
-      title: "Getting Started",
+      title: "User Dashboard",
+      url: "/",
       items: [
         {
           title: "Cart",
           url: "/product/cart",
         },
-      ],
-    },
-    {
-      title: "Architecture",
-      items: [
         {
-          title: "WishList",
+          title: "Wishlist",
           url: "/product/wishlist",
         },
+        
       ],
     },
   ],

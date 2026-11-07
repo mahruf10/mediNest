@@ -18,7 +18,9 @@ import { ShoppingBag } from "lucide-react"
 import { authClient } from "@/src/lib/auth-client"
 // import { role } from "better-auth/client"
 import { userRoute } from "@/src/routes/userRoute/route"
-import { adminRoute } from "@/src/routes/adminRoute/route"
+import { AdminRoute } from "@/src/routes/adminRoute/route"
+import { sellerRoute } from "@/src/routes/sellerRoute/route"
+import { allRoutes } from "@/src/routes/type"
 
 // This is sample data.
 const data = {
@@ -51,20 +53,24 @@ const data = {
   ],
 }
 export  function AppSidebar({user, ...props }: React.ComponentProps<typeof Sidebar>) {
-  // console.log(user);
-  // let route=[]
-  // switch(user.role){
-  //   case 'USER':
-  //     route=userRoute
-  //     break;
-  //     case 'ADMIN':
-  //       route=adminRoute
-  //       break;
-  // }
-  const route =
-user.role === "ADMIN"
-? adminRoute
-: userRoute;
+ 
+  let route:allRoutes=[]
+  switch(user.role){
+    case 'USER':
+      route=userRoute
+      break;
+      case 'ADMIN':
+        route=AdminRoute
+        break;
+        case 'SELLER':
+          route=sellerRoute
+          break;
+  }
+//   const route =
+// user.role === "ADMIN"
+// ? adminRoute
+// : userRoute;
+console.log(route);
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -78,7 +84,7 @@ user.role === "ADMIN"
 
       <SidebarGroupContent>
         <SidebarMenu>
-          {group.items.map((item) => (
+          {group.items?.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 isActive={item.isActive}

@@ -83,7 +83,7 @@ function NavDropdown({
 }
 
 export default function Navbar(user) {
-
+console.log(user);
   return (
     <header className="w-full">
       {/* ===== Top bar: logo, search, phone, icons ===== */}
@@ -151,15 +151,19 @@ export default function Navbar(user) {
             <Link href="/compare" aria-label="Compare" className="hidden sm:block">
               <ArrowLeftRight className="h-6 w-6" />
             </Link>
-            {user ? (
-              <Link href="/account" aria-label="Account">
-                <User className="h-6 w-6" />
-              </Link>
-            ) : (
-              <Link href="/login" aria-label="Cart">
-                Login
-              </Link>
-            )}
+            {Object.keys(user || {}).length === 0 ? (
+  <Link
+    href="/login"
+    aria-label="Login"
+    className="btn bg-black p-2 text-white rounded-xl"
+  >
+    Login
+  </Link>
+) : (
+  <Link href="/account" aria-label="Account">
+    <User className="h-6 w-6" />
+  </Link>
+)}
             
           </div>
         </div>

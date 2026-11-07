@@ -9,6 +9,7 @@ import { Card, CardContent} from "@/components/ui/card"
 import { Heart } from 'lucide-react';
 import NewarrivalWishlist from './NewarrivalWishlist';
 const NewArrival = async() => {
+  
     const categories=await service.getAllProduct()
       const allProducts = categories.flatMap(
         (category) => category.products
@@ -21,8 +22,6 @@ const NewArrival = async() => {
                 new Date(a.createdAt).getTime()
         )
         .slice(0, 10);
-
-    // console.log(latestProducts);
  
    return (
      <main className="container mx-auto px-4 py-8">

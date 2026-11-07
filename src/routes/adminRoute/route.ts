@@ -1,24 +1,24 @@
-export const adminRoute=
+import { allRoutes } from "../type";
+
+export const AdminRoute: allRoutes = {
+  items: [
     {
-      title: "Getting Started",
-      url: "#",
+      title: "Admin Dashboard",
+      url: "/",
       items: [
         {
-          title: "Cart",
-          url: "/product/cart",
+          title: "Add Users",
+          url: "/product/users",
         },
-        
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
         {
-          title: "WishList",
-          url: "/product/wishlist",
+          title: "All Orders",
+          url: "/product/allorders",
         },
-  
+        {
+          title: "Categories",
+          url: "/product/categories",
+        },
       ],
     },
-        
-      ],
-    }
+  ],
+};

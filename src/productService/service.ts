@@ -69,11 +69,13 @@ export interface ProductCategory {
   products: Product[];
 }
 const service={
-    getproductbySlug: async(slug:string): Promise<ProductCategory[] | null> => {
+  getproductbySlug: async(slug:string): Promise<ProductCategory[] | null> => {
    const endpoint = `http://localhost:5000/product/${encodeURIComponent(slug)}`;
+
    try {
     console.info(`[product-service] Fetching category "${slug}" from ${endpoint}`);
     const res=await fetch(endpoint, { cache: "no-store" });
+  
     if (res.status === 404) {
         return null;
     }
@@ -99,7 +101,10 @@ catch(error){
 }
     
 },
-    getAllProduct: async() => {
+  
+
+
+getAllProduct: async() => {
    try {
 const res=await fetch('http://localhost:5000/product',{
     })
