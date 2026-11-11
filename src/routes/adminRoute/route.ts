@@ -7,16 +7,16 @@ export const AdminRoute: allRoutes = {
       url: "/",
       items: [
         {
-          title: "Add Users",
-          url: "/product/users",
+          title: "Users",
+          url: "/allUsers",
         },
         {
           title: "All Orders",
-          url: "/product/allorders",
+          url: "/allorders",
         },
         {
           title: "Categories",
-          url: "/product/categories",
+          url: "/categories",
         },
       ],
     },

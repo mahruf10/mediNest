@@ -259,7 +259,6 @@ const UpdateProduct = ({id}) => {
                 )}
               </form.Field>
             </div>
-
             {/* Category + Manufacturer */}
             <div className="grid gap-6 sm:grid-cols-2">
               <form.Field name="categoryId">
@@ -313,7 +312,6 @@ const UpdateProduct = ({id}) => {
                 )}
               </form.Field>
             </div>
-
             {/* Image URL + preview */}
             <form.Field name="imageUrl">
               {(field) => {

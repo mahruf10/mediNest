@@ -7,11 +7,12 @@ import MyProductClient from './myProductClient';
 const MyProductPage = async() => {
     const {data}=await session()
     const sellerId=data?.user?.id
+    const stock=false
     if (!sellerId) {
         throw new Error('Cannot fetch seller products without an authenticated seller.')
     }
     const cookieHeader=(await cookies()).toString()
-    const products=await service.getSellerProduct(sellerId,cookieHeader)
+    const products=await service.getSellerProduct(sellerId,stock,cookieHeader)
    
     return (
         <div>

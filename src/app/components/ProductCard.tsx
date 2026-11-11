@@ -14,9 +14,10 @@ import { toast } from "@/components/ui/toast";
 
 export type Props = {
   products: Product[];
+  role?:string
 };
 
-export default  function ProductList({ products }: Props) {
+export default  function ProductList({ products,role }: Props) {
 const [pendingAction,setPendingAction]=useState<{type:"cart"|"wishlist";productId:number}|null>(null)
 
 const handleWishlist = async (productId: number) => {
@@ -49,7 +50,8 @@ const handleWishlist = async (productId: number) => {
       setPendingAction(null)
     }
   };
-
+  const canShop = !role || role === "USER"
+console.log(role);
   return (
     <div className="mt-20 grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {products.map((product) => (
@@ -63,15 +65,21 @@ const handleWishlist = async (productId: number) => {
             className="aspect-video w-full object-cover"
           />
 
-          <button
-            type="button"
-            onClick={() => handleWishlist(product.id)}
-            disabled={pendingAction?.type==="wishlist" && pendingAction.productId===product.id}
-            className="absolute right-4 top-4 z-10 flex size-10 items-center justify-center rounded-full bg-white shadow-md"
-            aria-label="Add to wishlist"
-          >
-            <Heart className="size-4" />
-          </button>
+{canShop && (
+  <button
+    type="button"
+    onClick={() => handleWishlist(product.id)}
+    disabled={
+      pendingAction?.type === "wishlist" &&
+      pendingAction.productId === product.id
+    }
+    className="absolute right-4 top-4 z-10 flex size-10 items-center justify-center rounded-full bg-white shadow-md"
+    aria-label="Add to wishlist"
+  >
+    <Heart className="size-4" />
+  </button>
+)}
+     
 
           <CardHeader>
             <CardTitle>{product.name}</CardTitle>
@@ -83,14 +91,17 @@ const handleWishlist = async (productId: number) => {
           </CardHeader>
 
           <CardFooter>
-            <Button
+            {
+              canShop &&(<Button
               className="w-full"
               onClick={() => handleCart(product)}
               disabled={product.stock===0 || (pendingAction?.type==="cart" && pendingAction.productId===product.id)}
             >
               <ShoppingCart />
               Add to cart
-            </Button>
+            </Button>)
+            }
+            
           </CardFooter>
         </Card>
       ))}

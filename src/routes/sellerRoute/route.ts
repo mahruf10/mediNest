@@ -16,11 +16,11 @@ export const sellerRoute: allRoutes = {
         },
         {
           title: "Orders",
-          url: "/orders",
+          url: "/order",
         },
         {
           title: "StockOut Products",
-          url: "/stockout",
+          url: "/stockoutProducts",
         },
       ],
     },
