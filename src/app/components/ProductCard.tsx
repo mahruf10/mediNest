@@ -51,7 +51,8 @@ const handleWishlist = async (productId: number) => {
     }
   };
   const canShop = !role || role === "USER"
-console.log(role);
+//console.log('role',role);
+//console.log('canshop',canShop);
   return (
     <div className="mt-20 grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {products.map((product) => (

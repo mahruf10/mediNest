@@ -70,7 +70,7 @@ export  function AppSidebar({user, ...props }: React.ComponentProps<typeof Sideb
 // user.role === "ADMIN"
 // ? adminRoute
 // : userRoute;
-console.log(route);
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>

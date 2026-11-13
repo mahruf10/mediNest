@@ -153,7 +153,7 @@ const orderInfo={
 }
  try {
     const res = await Service.postOrders(orderInfo);
- console.log("Backend Response:", res);
+ //console.log("Backend Response:", res);
     if (res?.data.success) {
       toast.add({
         type: "success",
@@ -172,7 +172,7 @@ const orderInfo={
       });
     }
 
-    console.log(res);
+    //console.log(res);
   } catch (error) {
     toast.add({
       type: "error",
@@ -304,7 +304,7 @@ const orderInfo={
                               size="icon"
                               className="h-9 w-9 shrink-0 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                               aria-label={`Remove ${product.name}`}
-                              onClick={()=>handleDelete(product.id)}
+                              onClick={()=>handleDelete(item.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>

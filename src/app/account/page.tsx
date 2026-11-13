@@ -5,6 +5,7 @@ import {
   FileText,
   Home,
   KeyRound,
+  LogOut,
   MapPin,
   Package,
   Plus,
@@ -12,6 +13,7 @@ import {
   Trash2,
   Upload,
   User,
+  X,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -24,6 +26,9 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { authClient } from "@/src/lib/auth-client"
+import { useRouter } from "next/navigation"
+import service from "@/src/productService/service"
+import { toast } from "@/components/ui/toast"
 // import Service from "@/src/productService/order.service"
 
 /* ---------------- Types & mock data (replace with your API/DB) ---------------- */
@@ -116,6 +121,8 @@ export default function AccountPage() {
 const [orders,setOrder]=React.useState<Order[]>([])
  const {data,isPending}=authClient.useSession()
  const [loading,setLoading]=React.useState(true)
+ const router = useRouter()
+const [loggingOut, setLoggingOut] = React.useState(false)
     const user=data?.user
 
   React.useEffect(() => {
@@ -154,7 +161,18 @@ if (isPending || (user?.id && loading)) {
   return 'please wait'
 }
   const initials = user?.name.split(" ").map((n) => n[0]).join("").slice(0, 2)
-
+const handleLogout = async () => {
+  setLoggingOut(true)
+  await authClient.signOut({
+    fetchOptions: {
+      onSuccess: () => {
+        router.push("/login") // change to your login route
+        router.refresh()
+      },
+      onError: () => setLoggingOut(false),
+    },
+  })
+}
   return (
     <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
       <Card>
@@ -169,6 +187,7 @@ if (isPending || (user?.id && loading)) {
             <p className="text-sm text-muted-foreground">{user?.email}</p>
             {/* <p className="text-xs text-muted-foreground">Member since {user?.createdAt}</p> */}
           </div>
+   
           <div className="grid grid-cols-3 gap-6 text-center">
 
             {
@@ -178,6 +197,15 @@ if (isPending || (user?.id && loading)) {
             {/* <Stat value={prescriptions.length} label="Prescriptions" /> */}
             <Stat value={addresses.length} label="Addresses" />
           </div>
+                  <Button
+  variant="outline"
+  onClick={handleLogout}
+  disabled={loggingOut}
+  className="gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+>
+  <LogOut className="size-4" />
+  {loggingOut ? "Logging out..." : "Logout"}
+</Button>  
         </CardContent>
       </Card>
 
@@ -299,6 +327,29 @@ function OrdersTab() {
   if (isPending || loading) {
     return <p>Loading your orders...</p>
   }
+
+const cancelOrder=async(id:string)=>{
+  try {
+    const res=await service.cancelOrder(id)
+    //console.log(res);
+  if(res.success){
+    toast.add({
+      type:'success',
+      title:'canceled product successfully'
+    })
+  }
+  } catch (error) {
+    //console.log(error.message);
+     toast.add({
+      type:'error',
+      title:'Somethings went wrong try again...'
+    })
+  }
+  
+}
+
+
+
   return (
     <Card>
       <CardHeader>
@@ -347,9 +398,9 @@ function OrdersTab() {
                     ৳{Number(o.totalAmount).toLocaleString()}
                   </span>
 
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <RotateCcw className="size-3.5" />
-                    Reorder
+                  <Button onClick={()=>cancelOrder(o.id)} variant="outline" size="sm" className="gap-2">
+                    <X color="#a21a1a" /> 
+                  Cancel Order
                   </Button>
                 </div>
               </div>

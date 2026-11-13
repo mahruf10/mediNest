@@ -1,3 +1,5 @@
+import { UpdatableStatus } from "./ordertable"
+
   type stockOut={
         stockOut?:boolean
     }
@@ -38,5 +40,19 @@ const res=await fetch(`http://localhost:5000/product/seller/${id}`,{
 catch(error){
     console.error(error);
 }
+},
+updateStatus:async(id: string, status:UpdatableStatus)=>{
+      const res = await fetch(`http://localhost:5000/orders/seller/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  })
+//console.log(res);
+  if (!res.ok) {
+    alert("Status update failed")
+    
+  }
+  const data=await res.json()
+    return data
 }
 }

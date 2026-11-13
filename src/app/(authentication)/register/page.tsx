@@ -34,7 +34,7 @@ export default function RegisterPage() {
       password: "",
     },
     onSubmit: async ({ value }) => {
-      console.log("reg data:", value);
+      //console.log("reg data:", value);
       try {
            const{data,error}=await authClient.signUp.email(value)
            if(error){
@@ -50,7 +50,7 @@ export default function RegisterPage() {
            title:'user successfully Registered'
            
           })
-          console.log(data);
+          //console.log(data);
           router.push('/login')
 
       } catch (error) {

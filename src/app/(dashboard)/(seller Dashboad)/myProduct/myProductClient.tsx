@@ -16,12 +16,12 @@ import Link from 'next/link';
 
 const MyProductClient = ({ products }) => {
    
-console.log(products);
+//console.log(products);
 
     const handleDelete = async(id: number) => {
     
      const res=await service.deleteProduct(id)
-     console.log(res);
+    // console.log(res);
      if(res.success){
         alert('done')
      }

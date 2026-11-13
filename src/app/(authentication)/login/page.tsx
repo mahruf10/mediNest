@@ -33,7 +33,7 @@ export default function LoginPage() {
       password: "",
     },
     onSubmit: async ({ value }) => {
-      console.log("Login data:", value);
+      //console.log("Login data:", value);
       try {
            const{data,error}=await authClient.signIn.email(value)
            if(error){
@@ -49,7 +49,7 @@ export default function LoginPage() {
            title:'user successfully login'
            
           })
-          console.log(data);
+          //console.log(data);
           router.push('/')
 
       } catch (error) {

@@ -148,13 +148,18 @@ removewishlist:async(wishlistId:number)=>{
         method:"DELETE"
     });
 },
-// getSession:async()=>{
-    
-//         const res=await fetch('http://localhost:5000/api/get-session',{
-//         })
-//         const data=await res.json()
-//         return data
-//     }     
+
+cancelOrder:async(id:string)=>{
+const res=await fetch(`http://localhost:5000/orders/${id}`,{
+    method:'DELETE'
+})
+
+if(!res.ok){
+    throw new Error('could not delete order.try again.....')
+}
+const data=await res.json()
+return data
+}
 }
 
 export default service

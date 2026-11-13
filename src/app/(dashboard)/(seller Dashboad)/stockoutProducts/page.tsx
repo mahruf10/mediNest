@@ -13,7 +13,7 @@ const StockOutProductPage = async() => {
        const cookieHeader=(await cookies()).toString()
        const checkStockOut=true
        const products=await service.getSellerProduct(sellerId,checkStockOut,cookieHeader)
-      console.log(products.data);
+      //(products.data);
     return (
         <div>
             <ProductList products={products.data} role={data.user.role}></ProductList>

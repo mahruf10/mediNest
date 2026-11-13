@@ -108,7 +108,7 @@ const defaultBottomLinks: FooterLink[] = [
 
 export function MediStoreFooter({
   className,
-  brandName = "MediStore",
+  brandName = "MediNest",
   tagline = "Your trusted online pharmacy. Genuine medicines and healthcare essentials, delivered to your door.",
   licenseText = "Licensed Pharmacy · Drug License No: XXXX-XXXX",
   contact = {

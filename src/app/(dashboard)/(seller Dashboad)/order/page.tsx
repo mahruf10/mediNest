@@ -1,25 +1,18 @@
-import { SellerOrderItemsTable, SellerOrderItem } from "../../../components/sellerComp/ordertable"
+import Service from "@/src/productService/order.service"
+import { SellerOrderItemsTable } from "../../../components/sellerComp/ordertable"
+import { session } from "@/src/productService/session"
 
-const data: SellerOrderItem[] = [
-  {
-    id: "1",
-    orderNumber: "10234",
-    productName: "Cotton Panjabi",
-    sku: "PNJ-001",
-    variant: "Navy / L",
-    quantity: 2,
-    unitPrice: 1450,
-    customerName: "Rahim Uddin",
-    status: "pending",
-    orderedAt: "2026-11-08T10:30:00Z",
-  },
-]
+// const data: SellerOrderItem[] = 
 
 
-export default function SellerOrderPage() {
+export default async function SellerOrderPage() {
+  const {data}=await session()
+  //console.log(data.user.id);
+  const orders=await Service.getSellerOrders(data.user.id)
+ // console.log(orders);
   return (
     <div>
-      <SellerOrderItemsTable data={data} />
+      <SellerOrderItemsTable data={orders.data} />
     </div>
   )
 }

@@ -74,34 +74,37 @@ export default function WishlistPage() {
     }
   };
 
-  const addToCart = async (productId:number) => {
-    try {
-      const res=await service.createCart(productId)
-      console.log(res);
-      if(!res.success){
-        toast.add({
-          type:'error',
-          title:'can not add to the cart.somethings went wrong'
-        })
-      }
-      else{
-         const deleteCart=await service.removewishlist(productId)
-         console.log('deleteCart',deleteCart);
-         if(deleteCart.success){
-             toast.add({
-          type:'success',
-          title:'Product added to cart!'
-        })
-         }
-      
-        
-      }
+ const addToCart = async (productId: number) => {
+  try {
+    const res = await service.createCart(productId)
 
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "Could not add product to cart");
+    if (!res.success) {
+      toast.add({
+        type: "error",
+        title: "Can not add to the cart. Something went wrong",
+      })
+      return
     }
-  };
+
+    const deleteCart = await service.removewishlist(productId)
+
+    if (deleteCart.success) {
+      toast.add({ type: "success", title: "Product added to cart!" })
+      setTimeout(() => window.location.reload(), 800)
+    } else {
+      toast.add({
+        type: "error",
+        title: "Added to cart, but could not remove from wishlist",
+      })
+    }
+  } catch (error) {
+    console.error(error)
+    toast.add({
+      type: "error",
+      title: error instanceof Error ? error.message : "Could not add product to cart",
+    })
+  }
+}
 
   const formatPrice = (price: string | number) =>
     `৳${Number(price).toLocaleString("en-BD", {

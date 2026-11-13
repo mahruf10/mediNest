@@ -9,14 +9,14 @@ const Service={
       body: JSON.stringify(OrderInfo)
     })
     const data=await res.json()
-    console.log(data);
+   //console.log(data);
     if(!data.success){
         return {success:false,error:data.message.name}
     }
     return data
   } catch (error) {
 
-    console.log(error);
+   //console.log(error);
     return {success:false,error:error}
   }
     },
@@ -26,7 +26,16 @@ const Service={
     const data=await res.json()
     return data
   } catch (error) {
-    console.log(error);
+    //console.log(error);
+  }
+    },
+    getSellerOrders:async(id)=>{
+  try {
+    const res=await fetch(`http://localhost:5000/orders/sellerOrder/${id}`)
+    const data=await res.json()
+    return data
+  } catch (error) {
+   // console.log(error);
   }
     }
 }

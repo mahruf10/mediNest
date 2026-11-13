@@ -83,7 +83,6 @@ function NavDropdown({
 }
 
 export default function Navbar(user) {
-console.log(user);
   return (
     <header className="w-full">
       {/* ===== Top bar: logo, search, phone, icons ===== */}
@@ -101,17 +100,17 @@ console.log(user);
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
               <nav className="mt-6 flex flex-col gap-4 px-4 text-base font-medium">
-                <Link href="/products">All Products</Link>
-                <Link href="/veterinary">Veterinary</Link>
+                <button>All Products</button>
+                <button>Veterinary</button>
                 {links.map((l) => (
                   <Link key={l.href} href={l.href}>
                     {l.label}
                   </Link>
                 ))}
-                <Link href="/track-order">Track Order</Link>
-                <Link href="/flash-deal" className="text-orange-500">
+                <Link href="/account">Track Order</Link>
+                {/* <Link href="/flash-deal" className="text-orange-500">
                   Flash Deal
-                </Link>
+                </Link> */}
               </nav>
             </SheetContent>
           </Sheet>
@@ -148,9 +147,9 @@ console.log(user);
             <Link href="/wishlist" aria-label="Wishlist">
               <Heart className="h-6 w-6" />
             </Link>
-            <Link href="/compare" aria-label="Compare" className="hidden sm:block">
+            {/* <Link href="/compare" aria-label="Compare" className="hidden sm:block">
               <ArrowLeftRight className="h-6 w-6" />
-            </Link>
+            </Link> */}
             {Object.keys(user || {}).length === 0 ? (
   <Link
     href="/login"
@@ -186,20 +185,20 @@ console.log(user);
           ))}
 
           <Link
-            href="/track-order"
+            href="/account"
             className="flex items-center gap-2 text-[15px] font-medium text-white hover:text-white/80"
           >
             <Package className="h-5 w-5 text-amber-300" />
             Track Order
           </Link>
-
+{/* 
           <Link
             href="/flash-deal"
             className="ml-auto flex h-full items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 px-6 text-[15px] font-semibold text-white"
           >
             <Zap className="h-4 w-4" />
             Flash Deal
-          </Link>
+          </Link> */}
         </div>
       </div>
     </header>

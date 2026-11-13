@@ -8,14 +8,34 @@ const adminService={
                     cookie
                 }
              })
-             console.log(res);
+             //console.log(res);
   if(!res.ok){
      throw new Error('could not find users')
   }
   const users=await res.json()
   return users
         } catch (error) {
-            console.log(error);
+            //console.log(error);
+            throw error
+        }
+ 
+    },
+    getOrders:async(cookie:string)=>{
+        try {
+             const res=await fetch('http://localhost:5000/users/allorders',{
+                method:'GET',
+                headers:{
+                    cookie
+                }
+             })
+             //console.log(res);
+  if(!res.ok){
+     throw new Error('could not find orders')
+  }
+  const orders=await res.json()
+  return orders
+        } catch (error) {
+            //console.log(error);
             throw error
         }
  
@@ -36,7 +56,7 @@ const adminService={
       
        
     )
-      console.log(res);
+      //console.log(res);
      if(!res.ok){
     const body = await res.text() // read the backend's own error message
     console.error("updateUserRole failed:", res.status, body)
@@ -46,7 +66,7 @@ const adminService={
     return data
         } 
         catch (error) {
-            console.log(error);
+            //console.log(error);
             throw error
         }
       

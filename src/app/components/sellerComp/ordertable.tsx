@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -44,6 +43,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { service } from "./seller.service"
+import { toast } from "@/components/ui/toast"
 
 /* ----------------------------- Types & helpers ---------------------------- */
 
@@ -55,13 +56,16 @@ export type OrderItemStatus =
   | "cancelled"
   | "returned"
 
+/** Table er bhetore use howa (mapped) row type */
 export type SellerOrderItem = {
   id: string
+  orderId:string
   orderNumber: string
   productName: string
+
   productImage?: string
   sku: string
-  variant?: string // e.g. "Black / XL"
+  variant?: string
   quantity: number
   unitPrice: number
   customerName: string
@@ -69,10 +73,28 @@ export type SellerOrderItem = {
   orderedAt: string // ISO date
 }
 
-type Props = {
-  data?: SellerOrderItem[]
-  onView?: (item: SellerOrderItem) => void
-  onUpdateStatus?: (item: SellerOrderItem, status: OrderItemStatus) => void
+/** API theke asha raw item (orders.data[i]) */
+export type ApiOrderItem = {
+  id: string
+  orderId?: string
+  productId?: number | string
+  productName: string
+  productImage?: string
+  variant?: string
+  quantity: number
+  price: string | number
+  subtotal?: string | number
+  status?: string // item level status thakle
+  createdAt: string
+  order?: {
+    id?: string
+    orderNumber?: string
+    status?: string
+    customerName?: string
+    user?: { name?: string }
+    [key: string]: any
+  }
+  product?: { sku?: string; [key: string]: any }
 }
 
 const statusStyles: Record<OrderItemStatus, string> = {
@@ -84,6 +106,12 @@ const statusStyles: Record<OrderItemStatus, string> = {
   returned: "bg-gray-200 text-gray-800 hover:bg-gray-200",
 }
 
+const PLACEHOLDER_IMG =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='#e5e7eb'/></svg>`
+  )
+
 const formatMoney = (value: number, currency = "BDT") =>
   new Intl.NumberFormat("en-BD", { style: "currency", currency }).format(value)
 
@@ -93,6 +121,50 @@ const formatDate = (iso: string) =>
     month: "short",
     year: "numeric",
   })
+export type UpdatableStatus = "PROCESSING" | "CANCELLED" | "SHIPPED" | "DELIVERED"
+
+const updateStatus = async (id: string, status: UpdatableStatus) => {
+  try {
+    const res = await service.updateStatus(id, status)
+
+    toast.add({
+      type:'success',
+      title:"Status updated"
+    })
+    setTimeout(() => window.location.reload(), 800)
+  } catch (error) {
+    //console.log("ERROR:", error)
+    toast.add({
+      type:'error',
+      title:"Something went wrong. Please try again."
+    })
+  }
+}
+
+
+
+/** API item -> table row */
+const mapApiItem = (i: ApiOrderItem): SellerOrderItem => {
+  const rawStatus = String(i.status ?? i.order?.status ?? "pending").toLowerCase()
+  const status = (
+    rawStatus in statusStyles ? rawStatus : "pending"
+  ) as OrderItemStatus
+
+  return {
+    id: i.id,
+    orderNumber: i.order?.orderNumber ?? "",
+      orderId: i.orderId ?? "", 
+    productName: i.productName,
+    productImage: i.productImage,
+    sku: i.product?.sku ?? String(i.productId ?? ""),
+    variant: i.variant,
+    quantity: Number(i.quantity),
+    unitPrice: Number(i.price),
+    customerName: i.order?.customerName ?? i.order?.user?.name ?? "N/A",
+    status,
+    orderedAt: i.createdAt,
+  }
+}
 
 /* --------------------------------- Columns -------------------------------- */
 
@@ -140,7 +212,7 @@ export const getColumns = ({
       </Button>
     ),
     cell: ({ row }) => (
-      <span className="font-medium">#{row.getValue("orderNumber")}</span>
+      <span className="font-medium">{row.getValue("orderNumber")}</span>
     ),
   },
   {
@@ -152,8 +224,15 @@ export const getColumns = ({
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={item.productImage || "/placeholder.png"}
+            src={item.productImage || PLACEHOLDER_IMG}
             alt={item.productName}
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            onError={(e) => {
+              const img = e.currentTarget
+              img.onerror = null // infinite loop atkate
+              img.src = PLACEHOLDER_IMG
+            }}
             className="h-10 w-10 rounded-md border object-cover"
           />
           <div className="flex flex-col">
@@ -188,13 +267,6 @@ export const getColumns = ({
       <div className="text-right">{row.getValue("quantity")}</div>
     ),
   },
-  // {
-  //   accessorKey: "unitPrice",
-  //   header: () => <div className="text-right">Unit price</div>,
-  //   cell: ({ row }) => (
-  //     <div className="text-right">{formatMoney(row.getValue("unitPrice"))}</div>
-  //   ),
-  // },
   {
     id: "total",
     accessorFn: (row) => row.quantity * row.unitPrice,
@@ -242,69 +314,82 @@ export const getColumns = ({
     ),
     cell: ({ row }) => formatDate(row.getValue("orderedAt")),
   },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const item = row.original
+{
+  id: "actions",
+  enableHiding: false,
+  cell: ({ row }) => {
+    const item = row.original
+
+    if (item.status === "pending") {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onView?.(item)}>
-              View details
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(item.orderNumber)}
-            >
-              Copy order number
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              disabled={item.status !== "pending"}
-              onClick={() => onUpdateStatus?.(item, "processing")}
-            >
-              Mark as processing
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={item.status !== "processing"}
-              onClick={() => onUpdateStatus?.(item, "shipped")}
-            >
-              Mark as shipped
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-red-600"
-              disabled={["delivered", "cancelled", "returned"].includes(item.status)}
-              onClick={() => onUpdateStatus?.(item, "cancelled")}
-            >
-              Cancel item
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => updateStatus(item.orderId, "PROCESSING")}>
+            Accept
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => updateStatus(item.orderId, "CANCELLED")}
+          >
+            Reject
+          </Button>
+        </div>
       )
-    },
+    }
+
+    if (item.status === "processing") {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => updateStatus(item.orderId, "SHIPPED")}
+        >
+          Mark as shipped
+        </Button>
+      )
+    }
+
+    if (item.status === "shipped") {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => updateStatus(item.orderId, "DELIVERED")}
+        >
+          Mark as delivered
+        </Button>
+      )
+    }
+
+    return null
   },
+},
 ]
 
 /* ---------------------------------- Table --------------------------------- */
 
-type Props = {
-  data: SellerOrderItem[]
+type Prop = {
+  /** parent theke `orders.data` pathaw (raw API array) */
+  data?: ApiOrderItem[]
   onView?: (item: SellerOrderItem) => void
   onUpdateStatus?: (item: SellerOrderItem, status: OrderItemStatus) => void
 }
 
-export function SellerOrderItemsTable({ data, onView, onUpdateStatus }: Props) {
+export function SellerOrderItemsTable({
+  data: apiData,
+  onView,
+  onUpdateStatus,
+}: Prop) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  // API data -> table data
+  const data = React.useMemo<SellerOrderItem[]>(
+    () => (apiData ?? []).map(mapApiItem),
+    [apiData]
+  )
 
   const columns = React.useMemo(
     () => getColumns({ onView, onUpdateStatus }),
@@ -452,4 +537,3 @@ export function SellerOrderItemsTable({ data, onView, onUpdateStatus }: Props) {
     </div>
   )
 }
-
