@@ -1,3 +1,4 @@
+import { API_URL } from "@/src/lib/config";
 import CategoryManager from '@/src/app/components/adminComp/CategoryManage';
 import { cookies } from 'next/headers';
 import React from 'react';
@@ -5,7 +6,7 @@ import React from 'react';
 const AdminCategory = async() => {
      const cookieHeader = (await cookies()).toString()
 
-  const data = await fetch("https://medi-nest-server-ten.vercel.app/category", {
+  const data = await fetch(`${API_URL}/category`, {
     headers: { cookie: cookieHeader },
     cache: "no-store",
   })

@@ -1,5 +1,7 @@
 "use client"
 
+
+import { API_URL } from "@/src/lib/config";
 import * as React from "react"
 import {
   FileText,
@@ -137,7 +139,7 @@ const [loggingOut, setLoggingOut] = React.useState(false)
       setLoading(true)
 
       const res = await fetch(
-        `https://medi-nest-server-ten.vercel.app/orders/${user.id}`
+        `${API_URL}/orders/${user.id}`
       )
 
       if (!res.ok) {
@@ -303,7 +305,7 @@ function OrdersTab() {
         setError("")
 
         const res = await fetch(
-          `https://medi-nest-server-ten.vercel.app/orders/${user.id}`
+          `${API_URL}/orders/${user.id}`
         )
 
         if (!res.ok) {

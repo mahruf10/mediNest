@@ -1,4 +1,6 @@
 "use client";
+
+import { API_URL } from "@/src/lib/config";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
@@ -24,9 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
-
-const API_URL = process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "https://medi-nest-server-ten.vercel.app";
-
 type Category = { id: number; name: string };
 
 // Number inputs are kept as strings in the form and converted on submit.

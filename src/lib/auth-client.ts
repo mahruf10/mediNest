@@ -1,6 +1,11 @@
+import { API_URL } from "@/src/lib/config";
 import { createAuthClient } from "better-auth/react"
 export const authClient = createAuthClient({
     /** The base URL of the server (optional if you're using the same domain) */
-    baseURL: "https://medi-nest-server-ten.vercel.app",
+ baseURL:
+    typeof window === "undefined"
+      ? `${API_URL}`
+      : undefined,
+      
    
 })

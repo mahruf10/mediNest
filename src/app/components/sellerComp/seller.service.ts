@@ -1,3 +1,4 @@
+import { API_URL } from "@/src/lib/config";
 import { UpdatableStatus } from "./ordertable"
 
   type stockOut={
@@ -8,7 +9,7 @@ export const service={
   
     getSellerProduct:async(id:string,checkStockOut:stockOut,cookie:string)=>{
         if(checkStockOut){
-               const res=await fetch(`https://medi-nest-server-ten.vercel.app/product/seller/${id}?stock=0`, {
+               const res=await fetch(`${API_URL}/product/seller/${id}?stock=0`, {
             method: "GET",
             headers: { cookie },
             cache: "no-store",
@@ -18,7 +19,7 @@ export const service={
         }
         return res.json()
         }
-        const res=await fetch(`https://medi-nest-server-ten.vercel.app/product/seller/${id}`, {
+        const res=await fetch(`${API_URL}/product/seller/${id}`, {
             method: "GET",
             headers: { cookie },
             cache: "no-store",
@@ -30,7 +31,7 @@ export const service={
     },
 deleteProduct:async(id:number)=>{
      try {
-const res=await fetch(`https://medi-nest-server-ten.vercel.app/product/seller/${id}`,{
+const res=await fetch(`${API_URL}/product/seller/${id}`,{
     method:"DELETE",
     credentials:"include"
 })
@@ -42,7 +43,7 @@ catch(error){
 }
 },
 updateStatus:async(id: string, status:UpdatableStatus)=>{
-      const res = await fetch(`https://medi-nest-server-ten.vercel.app/orders/seller/${id}`, {
+      const res = await fetch(`${API_URL}/orders/seller/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),

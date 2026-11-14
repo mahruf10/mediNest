@@ -1,3 +1,4 @@
+import { API_URL } from "@/src/lib/config";
 
 
 import Category from "@/lib/category";
@@ -6,7 +7,7 @@ import Link from "next/link";
 
 const Categories = async () => {
    const response = await fetch(
-    'https://medi-nest-server-ten.vercel.app/category',
+    `${API_URL}/category`,
     {
       cache: "no-store",
     }

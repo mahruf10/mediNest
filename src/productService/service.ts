@@ -1,6 +1,7 @@
+import { API_URL } from "@/src/lib/config";
 import type { StaticImageData } from "next/image";
 
-const API_BASE = "https://medi-nest-server-ten.vercel.app";
+const API_BASE = `${API_URL}`;
 
 type ApiResponse<T> = {
   success: boolean;
@@ -70,7 +71,7 @@ export interface ProductCategory {
 }
 const service={
   getproductbySlug: async(slug:string): Promise<ProductCategory[] | null> => {
-   const endpoint = `https://medi-nest-server-ten.vercel.app/product/${encodeURIComponent(slug)}`;
+   const endpoint = `${API_URL}/product/${encodeURIComponent(slug)}`;
 
    try {
     console.info(`[product-service] Fetching category "${slug}" from ${endpoint}`);
@@ -106,7 +107,7 @@ catch(error){
 
 getAllProduct: async() => {
    try {
-const res=await fetch('https://medi-nest-server-ten.vercel.app/product',{
+const res=await fetch(`${API_URL}/product`,{
     })
     const data=await res.json()
     return data;
@@ -150,7 +151,7 @@ removewishlist:async(wishlistId:number)=>{
 },
 
 cancelOrder:async(id:string)=>{
-const res=await fetch(`https://medi-nest-server-ten.vercel.app/orders/${id}`,{
+const res=await fetch(`${API_URL}/orders/${id}`,{
     method:'DELETE'
 })
 

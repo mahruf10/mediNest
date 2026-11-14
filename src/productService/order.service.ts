@@ -1,9 +1,10 @@
+import { API_URL } from "@/src/lib/config";
 import { orderInfo } from "../app/(dashboard)/product/cart/page"
 
 const Service={
     postOrders:async(OrderInfo:orderInfo)=>{
   try {
-    const res=await fetch('https://medi-nest-server-ten.vercel.app/orders', {
+    const res=await fetch(`${API_URL}/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -24,7 +25,7 @@ const Service={
     },
     getOrders:async(id:string)=>{
   try {
-    const res=await fetch(`https://medi-nest-server-ten.vercel.app/orders/${id}`)
+    const res=await fetch(`${API_URL}/orders/${id}`)
     const data=await res.json()
     return data
   } catch (error) {
@@ -33,7 +34,7 @@ const Service={
     },
     getSellerOrders:async(id:string)=>{
   try {
-    const res=await fetch(`https://medi-nest-server-ten.vercel.app/orders/sellerOrder/${id}`)
+    const res=await fetch(`${API_URL}/orders/sellerOrder/${id}`)
     const data=await res.json()
     return data
   } catch (error) {

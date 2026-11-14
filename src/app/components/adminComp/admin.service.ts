@@ -1,8 +1,9 @@
+import { API_URL } from "@/src/lib/config";
 
 const adminService={
     getUser:async(cookie:string)=>{
         try {
-             const res=await fetch('https://medi-nest-server-ten.vercel.app/users',{
+             const res=await fetch(`${API_URL}/users`,{
                 method:'GET',
                 headers:{
                     cookie
@@ -22,7 +23,7 @@ const adminService={
     },
     getOrders:async(cookie:string)=>{
         try {
-             const res=await fetch('https://medi-nest-server-ten.vercel.app/users/allorders',{
+             const res=await fetch(`${API_URL}/users/allorders`,{
                 method:'GET',
                 headers:{
                     cookie
@@ -44,7 +45,7 @@ const adminService={
     updateUserRole:async(id:string,role:string,cookie:string)=>{
         //  const cookieHeader = (await cookies()).toString()
         try {
-              const res=await fetch(`https://medi-nest-server-ten.vercel.app/users/${id}`,{
+              const res=await fetch(`${API_URL}/users/${id}`,{
             method:'PATCH',
             headers:{
                 'content-type':'application/json',

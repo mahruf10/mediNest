@@ -26,13 +26,12 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
  async rewrites() {
-    return [
-      {
-        source: "/backend/:path*",
-        destination: "https://medi-nest-server-ten.vercel.app/:path*",
-      },
-    ]
-  },
+  const backend = "https://medi-nest-server-ten.vercel.app"
+  return [
+    { source: "/api/auth/:path*", destination: `${backend}/api/auth/:path*` },
+    { source: "/backend/:path*", destination: `${backend}/:path*` },
+  ]
+},
 };
 
 export default nextConfig;
