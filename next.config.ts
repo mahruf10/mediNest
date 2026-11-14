@@ -25,7 +25,14 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-
+ async rewrites() {
+    return [
+      {
+        source: "/backend/:path*",
+        destination: "https://medi-nest-server-ten.vercel.app/:path*",
+      },
+    ]
+  },
 };
 
 export default nextConfig;
