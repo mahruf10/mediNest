@@ -15,7 +15,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const products = category.products;
     
     return (
-      <ProductList products={products} role={data.user.role}></ProductList>
+      <ProductList products={products} role={data?.user?.role}></ProductList>
     );
 };
 
