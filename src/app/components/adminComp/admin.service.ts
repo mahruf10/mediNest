@@ -2,7 +2,7 @@
 const adminService={
     getUser:async(cookie:string)=>{
         try {
-             const res=await fetch('http://localhost:5000/users',{
+             const res=await fetch('https://medi-nest-server-ten.vercel.app/users',{
                 method:'GET',
                 headers:{
                     cookie
@@ -22,7 +22,7 @@ const adminService={
     },
     getOrders:async(cookie:string)=>{
         try {
-             const res=await fetch('http://localhost:5000/users/allorders',{
+             const res=await fetch('https://medi-nest-server-ten.vercel.app/users/allorders',{
                 method:'GET',
                 headers:{
                     cookie
@@ -44,7 +44,7 @@ const adminService={
     updateUserRole:async(id:string,role:string,cookie:string)=>{
         //  const cookieHeader = (await cookies()).toString()
         try {
-              const res=await fetch(`http://localhost:5000/users/${id}`,{
+              const res=await fetch(`https://medi-nest-server-ten.vercel.app/users/${id}`,{
             method:'PATCH',
             headers:{
                 'content-type':'application/json',

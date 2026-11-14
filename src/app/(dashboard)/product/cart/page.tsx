@@ -52,7 +52,14 @@ const formatPrice = (value: number) =>
     maximumFractionDigits: 2,
   })}`;
 
-  
+  export type orderInfo={
+userId:string
+paymentMethod:string
+items:{
+  productId:number
+  quantity:number
+}[]
+  }
 export default function CartPage() {
   const [cartItems,setCartItem]= useState<CartItem[]>([])
   const [loading,setLoading]=useState(true)
@@ -142,8 +149,16 @@ try {
 }
 
 const handleOrder=async()=>{
+if (!data?.user.id) {
+  toast.add({
+    type: "error",
+    title: "Please sign in before placing an order.",
+  });
+  return;
+}
+
 const orderInfo={
-  userId:data?.user.id,
+  userId:data.user.id,
   paymentMethod:paymentMethod,
     items: cartItems.map((item) => ({
     productId: item.productId,

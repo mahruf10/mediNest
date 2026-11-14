@@ -2,7 +2,7 @@ import { cookies } from "next/headers"
 
 export const session=async()=>{
     const cookieStore=await cookies()
-    const res=await fetch("http://localhost:5000/api/auth/get-session",{
+    const res=await fetch("https://medi-nest-server-ten.vercel.app/api/auth/get-session",{
         headers:{
             cookie:cookieStore.toString()
         },

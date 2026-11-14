@@ -137,7 +137,7 @@ const [loggingOut, setLoggingOut] = React.useState(false)
       setLoading(true)
 
       const res = await fetch(
-        `http://localhost:5000/orders/${user.id}`
+        `https://medi-nest-server-ten.vercel.app/orders/${user.id}`
       )
 
       if (!res.ok) {
@@ -303,7 +303,7 @@ function OrdersTab() {
         setError("")
 
         const res = await fetch(
-          `http://localhost:5000/orders/${user.id}`
+          `https://medi-nest-server-ten.vercel.app/orders/${user.id}`
         )
 
         if (!res.ok) {

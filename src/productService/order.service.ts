@@ -1,7 +1,9 @@
+import { orderInfo } from "../app/(dashboard)/product/cart/page"
+
 const Service={
-    postOrders:async(OrderInfo:any)=>{
+    postOrders:async(OrderInfo:orderInfo)=>{
   try {
-    const res=await fetch('http://localhost:5000/orders', {
+    const res=await fetch('https://medi-nest-server-ten.vercel.app/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -20,18 +22,18 @@ const Service={
     return {success:false,error:error}
   }
     },
-    getOrders:async(id)=>{
+    getOrders:async(id:string)=>{
   try {
-    const res=await fetch(`http://localhost:5000/orders/${id}`)
+    const res=await fetch(`https://medi-nest-server-ten.vercel.app/orders/${id}`)
     const data=await res.json()
     return data
   } catch (error) {
     //console.log(error);
   }
     },
-    getSellerOrders:async(id)=>{
+    getSellerOrders:async(id:string)=>{
   try {
-    const res=await fetch(`http://localhost:5000/orders/sellerOrder/${id}`)
+    const res=await fetch(`https://medi-nest-server-ten.vercel.app/orders/sellerOrder/${id}`)
     const data=await res.json()
     return data
   } catch (error) {

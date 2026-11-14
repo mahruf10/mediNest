@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const Categories = async () => {
    const response = await fetch(
-    'http://localhost:5000/category',
+    'https://medi-nest-server-ten.vercel.app/category',
     {
       cache: "no-store",
     }

@@ -5,7 +5,7 @@ import React from 'react';
 const AdminCategory = async() => {
      const cookieHeader = (await cookies()).toString()
 
-  const data = await fetch("http://localhost:5000/category", {
+  const data = await fetch("https://medi-nest-server-ten.vercel.app/category", {
     headers: { cookie: cookieHeader },
     cache: "no-store",
   })

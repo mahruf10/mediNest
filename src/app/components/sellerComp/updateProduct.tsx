@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
 
-const API_URL = process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_BETTER_AUTH_URL ?? "https://medi-nest-server-ten.vercel.app";
 
 type Category = { id: number; name: string };
 
